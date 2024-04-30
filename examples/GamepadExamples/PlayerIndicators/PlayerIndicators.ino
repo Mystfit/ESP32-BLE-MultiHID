@@ -7,7 +7,7 @@
 #include <BleCompositeHID.h>
 
 BleCompositeHID compositeHID("Player indicator gamepad", "Mystfit", 100);
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 
 void OnPlayerIndicatorChanged(uint8_t playerIndicator)
 {
@@ -18,10 +18,10 @@ void setup()
 {
     GamepadConfiguration gamepadConfig;
     gamepadConfig.setIncludePlayerIndicators(true);
-    gamepad = new GamepadDevice(gamepadConfig);
+    gamepad.setConfig(gamepadConfig);
 
     FunctionSlot<uint8_t> playerIndicatorChangedSlot(OnPlayerIndicatorChanged);
-    gamepad->onPlayerIndicatorChanged.attach(playerIndicatorChangedSlot);
+    gamepad.onPlayerIndicatorChanged.attach(playerIndicatorChangedSlot);
 
     compositeHID.addDevice(gamepad);
     compositeHID.begin();

@@ -3,7 +3,7 @@
 #include <BleCompositeHID.h>
 
 BleCompositeHID compositeHID;
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 
 void setup()
 {
@@ -21,7 +21,7 @@ void setup()
     // bleGamepadConfig.setIncludeVolumeDec(true);
     // bleGamepadConfig.setIncludeVolumeMute(true);
 
-    gamepad = new GamepadDevice(bleGamepadConfig);
+    gamepad.setConfig(bleGamepadConfig);
     compositeHID.addDevice(gamepad);
     compositeHID.begin();
     // Changing bleGamepadConfig after the begin function has no effect, unless you call the begin function again
@@ -32,49 +32,49 @@ void loop()
     if (compositeHID.isConnected())
     {
         Serial.println("Pressing start and select");
-        gamepad->pressStart();
+        gamepad.pressStart();
         delay(100);
-        gamepad->releaseStart();
+        gamepad.releaseStart();
         delay(100);
-        gamepad->pressSelect();
+        gamepad.pressSelect();
         delay(100);
-        gamepad->releaseSelect();
+        gamepad.releaseSelect();
         delay(100);
 
         Serial.println("Increasing volume");
-        gamepad->pressVolumeInc();
+        gamepad.pressVolumeInc();
         delay(100);
-        gamepad->releaseVolumeInc();
+        gamepad.releaseVolumeInc();
         delay(100);
-        gamepad->pressVolumeInc();
+        gamepad.pressVolumeInc();
         delay(100);
-        gamepad->releaseVolumeInc();
+        gamepad.releaseVolumeInc();
         delay(100);
         
         Serial.println("Muting volume");
-        gamepad->pressVolumeMute();
+        gamepad.pressVolumeMute();
         delay(100);
-        gamepad->releaseVolumeMute();
+        gamepad.releaseVolumeMute();
         delay(1000);
-        gamepad->pressVolumeMute();
+        gamepad.pressVolumeMute();
         delay(100);
-        gamepad->releaseVolumeMute();
+        gamepad.releaseVolumeMute();
 
 
         Serial.println("Pressing menu and back");
-        gamepad->pressMenu();
+        gamepad.pressMenu();
         delay(100);
-        gamepad->releaseMenu();
+        gamepad.releaseMenu();
         delay(100);
-        gamepad->pressBack();
+        gamepad.pressBack();
         delay(100);
-        gamepad->releaseBack();
+        gamepad.releaseBack();
         delay(100);
 
         Serial.println("Pressing home");
-        gamepad->pressHome();
+        gamepad.pressHome();
         delay(100);
-        gamepad->releaseHome();
+        gamepad.releaseHome();
         delay(2000);
     }
 }

@@ -5,8 +5,8 @@
 #include <MouseDevice.h>
 
 
-GamepadDevice* gamepad;
-MouseDevice* mouse;
+GamepadDevice gamepad;
+MouseDevice mouse;
 BleCompositeHID compositeHID("CompositeHID Gamepad and Mouse", "Mystfit", 100);
 
 void setup() {
@@ -16,10 +16,7 @@ void setup() {
   GamepadConfiguration gamepadConfig;
   gamepadConfig.setButtonCount(8);
   gamepadConfig.setHatSwitchCount(0);
-  gamepad = new GamepadDevice(gamepadConfig);
-
-  // Set up mouse
-  mouse = new MouseDevice();
+  gamepad.setConfig(gamepadConfig);
 
   // Add both devices to the composite HID device to manage them
   compositeHID.addDevice(gamepad);
@@ -33,9 +30,9 @@ void loop() {
   if(compositeHID.isConnected()){
 
     // Test gamepad
-    gamepad->press(BUTTON_3);
+    gamepad.press(BUTTON_3);
     delay(500);               
-    gamepad->release(BUTTON_3);
+    gamepad.release(BUTTON_3);
     delay(500);
 
     // Test mouse
@@ -46,8 +43,8 @@ void loop() {
         int8_t x = round(cos((float)millis() / 1000.0f) * 10.0f);
         int8_t y = round(sin((float)millis() / 1000.0f) * 10.0f);
 
-        mouse->mouseMove(x, y);
-        mouse->sendMouseReport();
+        mouse.mouseMove(x, y);
+        mouse.sendMouseReport();
         
         if(reportCount % 8 == 0)
             Serial.println("Setting relative mouse to " + String(x) + ", " + String(y));

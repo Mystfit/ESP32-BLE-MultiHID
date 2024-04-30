@@ -10,7 +10,7 @@
 Bounce debouncer = Bounce(); // Instantiate a Bounce object
 
 BleCompositeHID compositeHID;
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 
 void setup()
 {
@@ -21,7 +21,6 @@ void setup()
 
     pinMode(LED_PIN, OUTPUT); // Setup the LED :
 
-    gamepad = new GamepadDevice();
     compositeHID.addDevice(gamepad);
     compositeHID.begin();
 }
@@ -38,12 +37,12 @@ void loop()
         if (value == LOW)
         {
             digitalWrite(LED_PIN, HIGH);
-            gamepad->press(BUTTON_1);
+            gamepad.press(BUTTON_1);
         }
         else
         {
             digitalWrite(LED_PIN, LOW);
-            gamepad->release(BUTTON_1);
+            gamepad.release(BUTTON_1);
         }
     }
 }

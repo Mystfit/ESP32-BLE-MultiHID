@@ -12,7 +12,7 @@
 #include <BleCompositeHID.h>
 
 BleCompositeHID compositeHID;
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 
 #define numOfButtons 10
 
@@ -33,7 +33,7 @@ void setup()
     GamepadConfiguration bleGamepadConfig;
     bleGamepadConfig.setAutoReport(false);
     bleGamepadConfig.setButtonCount(numOfButtons);
-    gamepad = new GamepadDevice(bleGamepadConfig);
+    gamepad.setConfig(bleGamepadConfig);
 
     compositeHID.addDevice(gamepad);
     compositeHID.begin();
@@ -53,11 +53,11 @@ void loop()
             {
                 if (currentButtonStates[currentIndex] == LOW)
                 {
-                    gamepad->press(physicalButtons[currentIndex]);
+                    gamepad.press(physicalButtons[currentIndex]);
                 }
                 else
                 {
-                    gamepad->release(physicalButtons[currentIndex]);
+                    gamepad.release(physicalButtons[currentIndex]);
                 }
             }
         }
@@ -69,7 +69,7 @@ void loop()
                 previousButtonStates[currentIndex] = currentButtonStates[currentIndex];
             }
 
-            gamepad->sendGamepadReport();
+            gamepad.sendGamepadReport();
         }
 
         delay(20);

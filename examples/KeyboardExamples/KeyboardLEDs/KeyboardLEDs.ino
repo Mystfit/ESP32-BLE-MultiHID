@@ -3,7 +3,7 @@
 #include <BleCompositeHID.h>
 
 BleCompositeHID compositeHID("ESP32 LED Keyboard", "Mystfit", 100);
-KeyboardDevice* keyboard;
+KeyboardDevice keyboard;
 
 void OnLEDEvent(KeyboardOutputReport data){
     Serial.println(
@@ -18,9 +18,8 @@ void setup()
 {
     Serial.begin(115200);
 
-    keyboard = new KeyboardDevice();
     FunctionSlot<KeyboardOutputReport> OnLEDEventSlot(OnLEDEvent);
-    keyboard->onLED.attach(OnLEDEventSlot);
+    keyboard.onLED.attach(OnLEDEventSlot);
 
     compositeHID.addDevice(keyboard);
     compositeHID.begin();
@@ -31,23 +30,23 @@ void setup()
 
 void loop()
 {
-    keyboard->keyPress(KEY_NUMLOCK);
+    keyboard.keyPress(KEY_NUMLOCK);
     delay(10);
-    keyboard->keyRelease(KEY_NUMLOCK);
+    keyboard.keyRelease(KEY_NUMLOCK);
     delay(1000);
 
-    keyboard->keyPress(KEY_CAPSLOCK);
+    keyboard.keyPress(KEY_CAPSLOCK);
     delay(10);
-    keyboard->keyRelease(KEY_CAPSLOCK);
+    keyboard.keyRelease(KEY_CAPSLOCK);
     delay(1000);
 
-    keyboard->keyPress(KEY_SCROLLLOCK);
+    keyboard.keyPress(KEY_SCROLLLOCK);
     delay(10);
-    keyboard->keyRelease(KEY_SCROLLLOCK);
+    keyboard.keyRelease(KEY_SCROLLLOCK);
     delay(1000);
 
-    keyboard->keyPress(KEY_COMPOSE);
+    keyboard.keyPress(KEY_COMPOSE);
     delay(10);
-    keyboard->keyRelease(KEY_COMPOSE);
+    keyboard.keyRelease(KEY_COMPOSE);
     delay(1000);
 }

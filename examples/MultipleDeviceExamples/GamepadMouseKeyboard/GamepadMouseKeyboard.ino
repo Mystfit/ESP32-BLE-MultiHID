@@ -6,9 +6,9 @@
 #include <GamepadDevice.h>
 
 
-GamepadDevice* gamepad;
-KeyboardDevice* keyboard;
-MouseDevice* mouse;
+GamepadDevice gamepad;
+KeyboardDevice keyboard;
+MouseDevice mouse;
 BleCompositeHID compositeHID("CompositeHID Keyboard Mouse Gamepad", "Mystfit", 100);
 
 void setup() {
@@ -18,15 +18,15 @@ void setup() {
     GamepadConfiguration gamepadConfig;
     gamepadConfig.setButtonCount(8);
     gamepadConfig.setHatSwitchCount(0);
-    gamepad = new GamepadDevice(gamepadConfig);
+    gamepad.setConfig(gamepadConfig);
   
     // Set up keyboard
     KeyboardConfiguration keyboardConfig;
-    keyboard = new KeyboardDevice(keyboardConfig);
+    keyboard.setConfig(keyboardConfig);
 
     // Set up mouse
     MouseConfiguration mouseConfig;
-    mouse = new MouseDevice(mouseConfig);
+    mouse.setConfig(mouseConfig);
 
      // Add all devices to the composite HID device to manage them
     compositeHID.addDevice(keyboard);
@@ -56,21 +56,21 @@ void loop() {
         int8_t y = round(sin((float)millis() / 1000.0f) * 10.0f);
 
         // Test mouse
-        mouse->mouseMove(x, y);
+        mouse.mouseMove(x, y);
 
         // Test keyboard
         if(reportCount % 100 == 0){
-            keyboard->keyPress(KEY_A);
-            keyboard->keyRelease(KEY_A);
+            keyboard.getDeviceConfig(KEY_A);
+            keyboard.keyRelease(KEY_A);
         }
 
         // Test gamepad
         if(reportCount % 100 == 0){
             gamepadPressed = !gamepadPressed;
             if(gamepadPressed)
-                gamepad->press(BUTTON_1);
+                gamepad.press(BUTTON_1);
             else
-                gamepad->release(BUTTON_1);
+                gamepad.release(BUTTON_1);
         }
         
         delay(16);

@@ -48,18 +48,15 @@ void XboxGamepadCallbacks::onStatus(NimBLECharacteristic* pCharacteristic, Statu
 }
 
 XboxGamepadDevice::XboxGamepadDevice() :
-    _config(new XboxOneSControllerDeviceConfiguration()),
     _extra_input(nullptr),
-    _callbacks(nullptr)
+    _callbacks(nullptr),
+    _config(nullptr)
 {
 }
 
 // XboxGamepadDevice methods
-XboxGamepadDevice::XboxGamepadDevice(XboxGamepadDeviceConfiguration* config) :
-    _config(config),
-    _extra_input(nullptr),
-    _callbacks(nullptr)
-{
+void XboxGamepadDevice::setConfig(const XboxGamepadDeviceConfiguration& config) {
+    _config = &config;
 }
 
 XboxGamepadDevice::~XboxGamepadDevice() {
@@ -72,11 +69,6 @@ XboxGamepadDevice::~XboxGamepadDevice() {
     if(_extra_input){
         delete _extra_input;
         _extra_input = nullptr;
-    }
-
-    if(_config){
-        delete _config;
-        _config = nullptr;
     }
 }
 
@@ -93,9 +85,9 @@ void XboxGamepadDevice::init(NimBLEHIDDevice* hid) {
     setCharacteristics(input, output);
 }
 
-const BaseCompositeDeviceConfiguration* XboxGamepadDevice::getDeviceConfig() const {
+const BaseCompositeDeviceConfiguration& XboxGamepadDevice::getDeviceConfig() const {
     // Return the device configuration
-    return _config;
+    return *_config;
 }
 
 void XboxGamepadDevice::resetInputs() {

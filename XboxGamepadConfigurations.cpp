@@ -1,6 +1,14 @@
 #include "XboxGamepadConfiguration.h"
 #include "XboxGamepadDevice.h"
 
+#if defined(CONFIG_ARDUHAL_ESP_LOG)
+#include "esp32-hal-log.h"
+#define LOG_TAG "XBoxGamepadConfigurations"
+#else
+#include "esp_log.h"
+static const char *LOG_TAG = "XBoxGamepadConfigurations";
+#endif
+
 
 // XboxGamepadDeviceConfiguration methods
 XboxGamepadDeviceConfiguration::XboxGamepadDeviceConfiguration(uint8_t reportId) : 
@@ -54,6 +62,7 @@ size_t XboxOneSControllerDeviceConfiguration::makeDeviceReport(uint8_t* buffer, 
     if(hidDescriptorSize < bufferSize){
         memcpy(buffer, XboxOneS_1708_HIDDescriptor, hidDescriptorSize);
     } else {
+        ESP_LOGE(LOG_TAG, "XBoxOneSControllerDeviceConfiguration hid descriptor size is %d/ Buffer size is %d", hidDescriptorSize, bufferSize);
         return -1;
     }
     
@@ -110,6 +119,7 @@ size_t XboxSeriesXControllerDeviceConfiguration::makeDeviceReport(uint8_t* buffe
     if(hidDescriptorSize < bufferSize){
         memcpy(buffer, XboxOneS_1914_HIDDescriptor, hidDescriptorSize);
     } else {
+        ESP_LOGE(LOG_TAG, "XBoxSeriesXControllerDeviceConfiguration hid descriptor size is %d/ Buffer size is %d", hidDescriptorSize, bufferSize);
         return -1;
     }
     return hidDescriptorSize;

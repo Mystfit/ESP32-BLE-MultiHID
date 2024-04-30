@@ -12,7 +12,7 @@
 
 // Shows how you can customise the device name, manufacturer name and initial battery level
 BleCompositeHID compositeHID("ESP32 Keypad", "lemmingDev", 100);
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 
 #define ROWS 4
 #define COLS 4
@@ -60,14 +60,14 @@ void KeypadUpdate()
             {
                 if (keystate == PRESSED)
                 {
-                    gamepad->press(customKeypad.key[i].kchar);
+                    gamepad.press(customKeypad.key[i].kchar);
                 } // Press or release button based on the current state
                 if (keystate == RELEASED)
                 {
-                    gamepad->release(customKeypad.key[i].kchar);
+                    gamepad.release(customKeypad.key[i].kchar);
                 }
 
-                gamepad->sendGamepadReport(); // Send the HID report after values for all button states are updated, and at least one button state had changed
+                gamepad.sendGamepadReport(); // Send the HID report after values for all button states are updated, and at least one button state had changed
             }
         }
     }

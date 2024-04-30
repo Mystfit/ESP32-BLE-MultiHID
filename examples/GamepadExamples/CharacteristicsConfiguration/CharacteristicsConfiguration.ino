@@ -10,7 +10,7 @@
 
 BleCompositeHID compositeHID("Custom Contoller Name", "lemmingDev", 100);   // Create a BleCompositeHID object to manage all of the devices
 
-GamepadDevice* bleGamepad; // Set custom device name, manufacturer and initial battery level
+GamepadDevice bleGamepad; // Set custom device name, manufacturer and initial battery level
 BLEHostConfiguration bleHostConfig;   // Create a BleGamepadConfiguration object to store all of the options
 
 // Use the procedure below to set a custom Bluetooth MAC address
@@ -37,7 +37,7 @@ void setup()
     gamepadConfig.setAxesMax(0x7FFF); // 32767 --> int16_t - 16 bit signed integer - Can be in decimal or hexadecimal     
     
     // Set up gamepad device late so we can pass our new config
-    bleGamepad = new GamepadDevice(gamepadConfig);
+    bleGamepad.setConfig(gamepadConfig);
     
     // Add gamepad to composite HID device
     compositeHID.addDevice(bleGamepad); 

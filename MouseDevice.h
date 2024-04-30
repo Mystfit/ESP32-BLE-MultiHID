@@ -21,10 +21,11 @@ private:
 
 public:
     MouseDevice();
-    MouseDevice(const MouseConfiguration& config);
+
+    void setConfig(const MouseConfiguration& config);
     
     void init(NimBLEHIDDevice* hid) override;
-    const BaseCompositeDeviceConfiguration* getDeviceConfig() const override;
+    const BaseCompositeDeviceConfiguration& getDeviceConfig() const override;
 
     void resetButtons();
     void mouseClick(uint8_t button = MOUSE_LOGICAL_LEFT_BUTTON);

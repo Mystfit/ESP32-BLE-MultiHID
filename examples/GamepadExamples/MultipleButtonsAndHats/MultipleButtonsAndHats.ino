@@ -12,7 +12,7 @@
 #include <BleCompositeHID.h>
 
 BleCompositeHID compositeHID;
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 
 #define numOfButtons 4
 #define numOfHats 1 // Maximum 4 hat switches supported
@@ -48,7 +48,7 @@ void setup()
     bleGamepadConfig.setAutoReport(false);
     bleGamepadConfig.setButtonCount(numOfButtons);
     bleGamepadConfig.setHatSwitchCount(numOfHats);
-    gamepad = new GamepadDevice(bleGamepadConfig);
+    gamepad.setConfig(bleGamepadConfig);
 
     compositeHID.addDevice(gamepad);
     compositeHID.begin();
@@ -69,11 +69,11 @@ void loop()
             {
                 if (currentButtonStates[currentIndex] == LOW)
                 {
-                    gamepad->press(physicalButtons[currentIndex]);
+                    gamepad.press(physicalButtons[currentIndex]);
                 }
                 else
                 {
-                    gamepad->release(physicalButtons[currentIndex]);
+                    gamepad.release(physicalButtons[currentIndex]);
                 }
             }
         }
@@ -124,7 +124,7 @@ void loop()
         }
 
         // Set hat values
-        gamepad->setHats(hatValues[0], hatValues[1], hatValues[2], hatValues[3]);
+        gamepad.setHats(hatValues[0], hatValues[1], hatValues[2], hatValues[3]);
 
         // Update previous states to current states and send report
         if (currentButtonStates != previousButtonStates || currentHatStates != previousHatStates)
@@ -139,7 +139,7 @@ void loop()
                 previousHatStates[currentIndex] = currentHatStates[currentIndex];
             }
 
-            gamepad->sendGamepadReport();
+            gamepad.sendGamepadReport();
         }
 
         delay(20);

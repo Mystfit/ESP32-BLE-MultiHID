@@ -121,10 +121,10 @@ void BleCompositeHID::timedSendDeferredReports(void *pvParameter)
     }
 }
 
-void BleCompositeHID::addDevice(BaseCompositeDevice *device)
+void BleCompositeHID::addDevice(BaseCompositeDevice& device)
 {
-    device->_parent = this;
-    _devices.push_back(device);
+    device._parent = this;
+    _devices.push_back(&device);
 }
 
 bool BleCompositeHID::isConnected()
@@ -193,8 +193,8 @@ void BleCompositeHID::taskServer(void *pvParameter)
         device->init(BleCompositeHIDInstance->_hid);
         ESP_LOGD(LOG_TAG, "After device %s init", device->getDeviceConfig()->getDeviceName());
         
-        auto config = device->getDeviceConfig();
-        size_t reportSize = config->makeDeviceReport(tempHidReportDescriptor + hidReportDescriptorSize, totalBufferSize);
+        const BaseCompositeDeviceConfiguration& config = device->getDeviceConfig();
+        int reportSize = config.makeDeviceReport(tempHidReportDescriptor + hidReportDescriptorSize, totalBufferSize);
         
         if(reportSize >= BLE_ATT_ATTR_MAX_LEN){
             ESP_LOGE(LOG_TAG, "Device report size %d is larger than max buffer size %d", reportSize, BLE_ATT_ATTR_MAX_LEN);
@@ -203,10 +203,10 @@ void BleCompositeHID::taskServer(void *pvParameter)
             ESP_LOGE(LOG_TAG, "Device report size is 0");
             return;
         } else if(reportSize < 0){
-            ESP_LOGE(LOG_TAG, "Error creating report for device %s", config->getDeviceName());
+            ESP_LOGE(LOG_TAG, "Error creating report for device %s", config.getDeviceName());
             return;
         } else {
-            ESP_LOGD(LOG_TAG, "Created device %s with report size %d", config->getDeviceName(), reportSize);
+            ESP_LOGD(LOG_TAG, "Created device %s with report size %d", config.getDeviceName(), reportSize);
         }
         hidReportDescriptorSize += reportSize;
     }

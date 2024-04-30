@@ -57,11 +57,12 @@ private:
 
 public:
     GamepadDevice();
-    GamepadDevice(const GamepadConfiguration& config);
     ~GamepadDevice();
+    
+    void setConfig(const GamepadConfiguration& config);
 
     void init(NimBLEHIDDevice* hid) override;
-    const BaseCompositeDeviceConfiguration* getDeviceConfig() const override;
+    const BaseCompositeDeviceConfiguration& getDeviceConfig() const override;
 
     void setAxes(int16_t x = 0, int16_t y = 0, int16_t z = 0, int16_t rZ = 0, int16_t rX = 0, int16_t rY = 0, int16_t slider1 = 0, int16_t slider2 = 0);
     void press(uint8_t b = BUTTON_1);   // press BUTTON_1 by default

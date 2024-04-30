@@ -46,13 +46,9 @@ KeyboardDevice::KeyboardDevice() :
     resetKeys();
 }
 
-KeyboardDevice::KeyboardDevice(const KeyboardConfiguration& config) :
-    _config(config),
-    _input(),
-    _output(),
-    _inputReport(),
-    _callbacks(nullptr)
+void KeyboardDevice::setConfig(const KeyboardConfiguration& config)
 {
+    _config = config;
     resetKeys();
 }
 
@@ -76,9 +72,9 @@ void KeyboardDevice::init(NimBLEHIDDevice* hid)
     setCharacteristics(_input, _output);
 }
 
-const BaseCompositeDeviceConfiguration* KeyboardDevice::getDeviceConfig() const
+const BaseCompositeDeviceConfiguration& KeyboardDevice::getDeviceConfig() const
 {
-    return &_config;
+    return _config;
 }
 
 void KeyboardDevice::resetKeys()

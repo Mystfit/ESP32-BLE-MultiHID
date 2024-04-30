@@ -162,11 +162,12 @@ static String dPadDirectionName(uint8_t direction){
 class XboxGamepadDevice : public BaseCompositeDevice {
 public:
     XboxGamepadDevice();
-    XboxGamepadDevice(XboxGamepadDeviceConfiguration* config);
     ~XboxGamepadDevice();
 
+    void setConfig(const XboxGamepadDeviceConfiguration& config);
+
     void init(NimBLEHIDDevice* hid) override;
-    const BaseCompositeDeviceConfiguration* getDeviceConfig() const override;
+    const BaseCompositeDeviceConfiguration& getDeviceConfig() const override;
 
     Signal<XboxGamepadOutputReportData> onVibrate;
 
@@ -197,7 +198,7 @@ private:
 
     NimBLECharacteristic* _extra_input;
     XboxGamepadCallbacks* _callbacks;
-    XboxGamepadDeviceConfiguration* _config;
+    const XboxGamepadDeviceConfiguration* _config;
 
     // Threading
     std::mutex _mutex;

@@ -9,7 +9,7 @@
 #include <BleCompositeHID.h>
 
 BleCompositeHID compositeHID;
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 
 const int potPin = 34;                // Potentiometer is connected to GPIO 34 (Analog ADC1_CH6)
 const int numberOfPotSamples = 5;     // Number of pot samples to take (to smooth the values)
@@ -21,9 +21,6 @@ void setup()
     Serial.begin(115200);
     Serial.println("Starting BLE work!");
     
-    gamepad = new GamepadDevice();
-    compositeHID.addDevice(gamepad);
-
     compositeHID.addDevice(gamepad);
     compositeHID.begin();
 }
@@ -50,7 +47,7 @@ void loop()
         int adjustedValue = map(potValue, 0, 4095, 32737, 0);
 
         // Update X axis and auto-send report
-        gamepad->setX(adjustedValue);
+        gamepad.setX(adjustedValue);
         delay(delayBetweenHIDReports);
 
         // The code below (apart from the 2 closing braces) is for pot value degugging, and can be removed

@@ -10,7 +10,7 @@
 #define numOfHatSwitches 4
 
 BleCompositeHID compositeHID;
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 GamepadConfiguration bleGamepadConfig;
 
 void setup()
@@ -31,7 +31,7 @@ void setup()
 	bleGamepadConfig.setAxesMin(0x0000); // 0 --> int16_t - 16 bit signed integer - Can be in decimal or hexadecimal
     bleGamepadConfig.setAxesMax(0x7FFF); // 32767 --> int16_t - 16 bit signed integer - Can be in decimal or hexadecimal 
     
-    gamepad = new GamepadDevice(bleGamepadConfig); // Simulation controls, special buttons and hats 2/3/4 are disabled by default
+    gamepad.setConfig(bleGamepadConfig); // Simulation controls, special buttons and hats 2/3/4 are disabled by default
     compositeHID.addDevice(gamepad);
     compositeHID.begin();
     // changing bleGamepadConfig after the begin function has no effect, unless you call the begin function again
@@ -55,76 +55,76 @@ void loop()
         Serial.println("\n\nPress all buttons one by one");
         for (int i = 1; i <= numOfButtons; i += 1)
         {
-            gamepad->press(i);
-            gamepad->sendGamepadReport();
+            gamepad.press(i);
+            gamepad.sendGamepadReport();
             delay(100);
-            gamepad->release(i);
-            gamepad->sendGamepadReport();
+            gamepad.release(i);
+            gamepad.sendGamepadReport();
             delay(25);
         }
 
         Serial.println("Press start and select");
-        gamepad->pressStart();
-        gamepad->sendGamepadReport();
+        gamepad.pressStart();
+        gamepad.sendGamepadReport();
         delay(100);
-        gamepad->pressSelect();
-        gamepad->sendGamepadReport();
+        gamepad.pressSelect();
+        gamepad.sendGamepadReport();
         delay(100);
-        gamepad->releaseStart();
-        gamepad->sendGamepadReport();
+        gamepad.releaseStart();
+        gamepad.sendGamepadReport();
         delay(100);
-        gamepad->releaseSelect();
-        gamepad->sendGamepadReport();
+        gamepad.releaseSelect();
+        gamepad.sendGamepadReport();
 
         Serial.println("Move all axis simultaneously from min to max");
         for (int i = bleGamepadConfig.getAxesMin(); i < bleGamepadConfig.getAxesMax(); i += (bleGamepadConfig.getAxesMax() / 256) + 1)
         {
-            gamepad->setAxes(i, i, i, i, i, i);
-            gamepad->sendGamepadReport();
+            gamepad.setAxes(i, i, i, i, i, i);
+            gamepad.sendGamepadReport();
             delay(10);
         }
-        gamepad->setAxes(); // Reset all axes to zero
-        gamepad->sendGamepadReport();
+        gamepad.setAxes(); // Reset all axes to zero
+        gamepad.sendGamepadReport();
 
         Serial.println("Move all sliders simultaneously from min to max");
        for (int i = bleGamepadConfig.getAxesMin(); i < bleGamepadConfig.getAxesMax(); i += (bleGamepadConfig.getAxesMax() / 256) + 1)
         {
-            gamepad->setSliders(i, i);
-            gamepad->sendGamepadReport();
+            gamepad.setSliders(i, i);
+            gamepad.sendGamepadReport();
             delay(10);
         }
-        gamepad->setSliders(); // Reset all sliders to zero
-        gamepad->sendGamepadReport();
+        gamepad.setSliders(); // Reset all sliders to zero
+        gamepad.sendGamepadReport();
 
         Serial.println("Send hat switch 1 one by one in an anticlockwise rotation");
         for (int i = 8; i >= 0; i--)
         {
-            gamepad->setHat1(i);
-            gamepad->sendGamepadReport();
+            gamepad.setHat1(i);
+            gamepad.sendGamepadReport();
             delay(200);
         }
 
         Serial.println("Send hat switch 2 one by one in an anticlockwise rotation");
         for (int i = 8; i >= 0; i--)
         {
-            gamepad->setHat2(i);
-            gamepad->sendGamepadReport();
+            gamepad.setHat2(i);
+            gamepad.sendGamepadReport();
             delay(200);
         }
 
         Serial.println("Send hat switch 3 one by one in an anticlockwise rotation");
         for (int i = 8; i >= 0; i--)
         {
-            gamepad->setHat3(i);
-            gamepad->sendGamepadReport();
+            gamepad.setHat3(i);
+            gamepad.sendGamepadReport();
             delay(200);
         }
 
         Serial.println("Send hat switch 4 one by one in an anticlockwise rotation");
         for (int i = 8; i >= 0; i--)
         {
-            gamepad->setHat4(i);
-            gamepad->sendGamepadReport();
+            gamepad.setHat4(i);
+            gamepad.sendGamepadReport();
             delay(200);
         }
 
@@ -132,15 +132,15 @@ void loop()
         //    Serial.println("Move all simulation controls simultaneously from min to max");
         //    for (int i = bleGamepadConfig.getSimulationMin(); i < bleGamepadConfig.getSimulationMax(); i += (bleGamepadConfig.getAxesMax() / 256) + 1)
         //    {
-        //      gamepad->setRudder(i);
-        //      gamepad->setThrottle(i);
-        //      gamepad->setAccelerator(i);
-        //      gamepad->setBrake(i);
-        //      gamepad->setSteering(i);
-        //      gamepad->sendGamepadReport();
+        //      gamepad.setRudder(i);
+        //      gamepad.setThrottle(i);
+        //      gamepad.setAccelerator(i);
+        //      gamepad.setBrake(i);
+        //      gamepad.setSteering(i);
+        //      gamepad.sendGamepadReport();
         //      delay(10);
         //    }
-        //    gamepad->setSimulationControls(); //Reset all simulation controls to zero
-        gamepad->sendGamepadReport();
+        //    gamepad.setSimulationControls(); //Reset all simulation controls to zero
+        gamepad.sendGamepadReport();
     }
 }

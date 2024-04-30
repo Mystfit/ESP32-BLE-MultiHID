@@ -4,7 +4,7 @@
 
 
 BleCompositeHID compositeHID("ESP32 Media Keyboard", "Mystfit", 100);
-KeyboardDevice* keyboard;
+KeyboardDevice keyboard;
 
 void setup()
 {
@@ -14,7 +14,7 @@ void setup()
     KeyboardConfiguration config;
     config.setUseMediaKeys(true);
 
-    keyboard = new KeyboardDevice(config);
+    keyboard.setConfig(config);
     compositeHID.addDevice(keyboard);
     compositeHID.begin();
 
@@ -24,9 +24,9 @@ void setup()
 
 void pressReleaseMediaKey(uint32_t keyCode){
     Serial.println("Pressing key " + String(keyCode));
-    keyboard->mediaKeyPress(keyCode);
+    keyboard.mediaKeyPress(keyCode);
     delay(50);
-    keyboard->mediaKeyRelease(keyCode);
+    keyboard.mediaKeyRelease(keyCode);
     delay(1000);
 }
 

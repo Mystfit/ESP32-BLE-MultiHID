@@ -12,14 +12,9 @@ MouseDevice::MouseDevice():
     this->resetButtons();
 }
 
-MouseDevice::MouseDevice(const MouseConfiguration& config):
-    _config(config), // Copy config to avoid modification
-    _mouseButtons(),
-    _mouseX(0),
-    _mouseY(0),
-    _mouseWheel(0),
-    _mouseHWheel(0)
+void MouseDevice::setConfig(const MouseConfiguration& config)
 {
+    _config = config;
     this->resetButtons();
 }
 
@@ -28,9 +23,9 @@ void MouseDevice::init(NimBLEHIDDevice* hid)
     setCharacteristics(hid->inputReport(_config.getReportId()), nullptr);
 }
 
-const BaseCompositeDeviceConfiguration* MouseDevice::getDeviceConfig() const
+const BaseCompositeDeviceConfiguration& MouseDevice::getDeviceConfig() const
 {
-    return &_config;
+    return _config;
 }
 
 void MouseDevice::resetButtons()

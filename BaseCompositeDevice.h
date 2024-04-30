@@ -41,7 +41,7 @@ class BaseCompositeDevice
     friend class BleCompositeHID;
 public:
     virtual void init(NimBLEHIDDevice* hid) = 0;
-    virtual const BaseCompositeDeviceConfiguration* getDeviceConfig() const = 0;
+    virtual const BaseCompositeDeviceConfiguration& getDeviceConfig() const = 0;
     
     BleCompositeHID* getParent();
 

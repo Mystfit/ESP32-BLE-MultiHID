@@ -5,8 +5,8 @@
 #include <MouseDevice.h>
 
 
-KeyboardDevice* keyboard;
-MouseDevice* mouse;
+KeyboardDevice keyboard;
+MouseDevice mouse;
 BleCompositeHID compositeHID("CompositeHID Keyboard and Mouse", "Mystfit", 100);
 
 void setup() {
@@ -15,12 +15,12 @@ void setup() {
     // Set up keyboard
     KeyboardConfiguration keyboardConfig;
     keyboardConfig.setAutoReport(false);
-    keyboard = new KeyboardDevice(keyboardConfig);
+    keyboard.setConfig(keyboardConfig);
 
     // Set up mouse
     MouseConfiguration mouseConfig;
     mouseConfig.setAutoReport(false);
-    mouse = new MouseDevice(mouseConfig);
+    mouse.setConfig(mouseConfig);
 
      // Add both devices to the composite HID device to manage them
     compositeHID.addDevice(keyboard);
@@ -47,15 +47,15 @@ void loop() {
         int8_t x = round(cos((float)millis() / 1000.0f) * 10.0f);
         int8_t y = round(sin((float)millis() / 1000.0f) * 10.0f);
 
-        mouse->mouseMove(x, y);
-        mouse->sendMouseReport();
+        mouse.mouseMove(x, y);
+        mouse.sendMouseReport();
 
         // Test keyboard
         if(reportCount % 100 == 0){
-            keyboard->keyPress(KEY_A);
-            keyboard->sendKeyReport();
-            keyboard->keyRelease(KEY_A);
-            keyboard->sendKeyReport();
+            keyboard.keyPress(KEY_A);
+            keyboard.sendKeyReport();
+            keyboard.keyRelease(KEY_A);
+            keyboard.sendKeyReport();
         }
         
         delay(16);

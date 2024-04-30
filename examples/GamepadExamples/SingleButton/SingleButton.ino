@@ -9,14 +9,13 @@
 #define BUTTONPIN 35 // Pin button is attached to
 
 BleCompositeHID compositeHID;
-GamepadDevice* gamepad;
+GamepadDevice gamepad;
 
 int previousButton1State = HIGH;
 
 void setup()
 {
     pinMode(BUTTONPIN, INPUT_PULLUP);
-    gamepad = new GamepadDevice();
     compositeHID.addDevice(gamepad);
     compositeHID.begin();
 }
@@ -32,11 +31,11 @@ void loop()
         {
             if (currentButton1State == LOW)
             {
-                gamepad->press(BUTTON_1);
+                gamepad.press(BUTTON_1);
             }
             else
             {
-                gamepad->release(BUTTON_1);
+                gamepad.release(BUTTON_1);
             }
         }
         previousButton1State = currentButton1State;

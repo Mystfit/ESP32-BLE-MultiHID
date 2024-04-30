@@ -26,7 +26,7 @@ public:
     void end();
 
     void setBatteryLevel(uint8_t level);
-    void addDevice(BaseCompositeDevice* device);
+    void addDevice(BaseCompositeDevice& device);
     bool isConnected();
 
     void queueDeviceDeferredReport(std::function<void()> && reportFunc);

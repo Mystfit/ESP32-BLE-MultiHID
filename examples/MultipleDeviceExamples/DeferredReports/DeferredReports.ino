@@ -9,9 +9,9 @@
 #include <GamepadDevice.h>
 
 // Create variables to hold our devices
-GamepadDevice* gamepad = nullptr;
-KeyboardDevice* keyboard = nullptr;
-MouseDevice* mouse = nullptr;
+GamepadDevice gamepad;
+KeyboardDevice keyboard;
+MouseDevice mouse;
 
 // Create our composite HID device that will manage our devices
 BleCompositeHID compositeHID("CompositeHID Keyboard Mouse Gamepad", "Mystfit", 100);
@@ -32,21 +32,21 @@ void setup() {
     gamepadConfig.setAutoDefer(true);
 
     // Set up gamepad device instance
-    gamepad = new GamepadDevice(gamepadConfig);
+    gamepad.setConfig(gamepadConfig);
   
     // Set up keyboard config
     KeyboardConfiguration keyboardConfig;
     keyboardConfig.setAutoDefer(true);
 
     // Set up keyboard device instance
-    keyboard = new KeyboardDevice(keyboardConfig);
+    keyboard.setConfig(keyboardConfig);
 
     // Set up mouse
     MouseConfiguration mouseConfig;
     mouseConfig.setAutoDefer(true);
 
     // Set up mouse device instance
-    mouse = new MouseDevice(mouseConfig);
+    mouse.setConfig(mouseConfig);
 
      // Add all devices to the composite HID device to manage them
     compositeHID.addDevice(keyboard);
@@ -78,7 +78,7 @@ void loop() {
         int elapsedTime = currentTime - lastReportTime;
 
         // Test mouse by moving it in a circle
-        mouse->mouseMove(
+        mouse.mouseMove(
             round(cos((float)currentTime / 100.0f) * 10.0f), 
             round(sin((float)currentTime / 100.0f) * 10.0f)
         );
@@ -87,17 +87,17 @@ void loop() {
             // Test keyboard by pressing and releasing the A key every second
             keyPressed = !keyPressed;
             if(keyPressed){
-                keyboard->keyPress(KEY_A);
+                keyboard.keyPress(KEY_A);
             } else {
-                keyboard->keyRelease(KEY_A);
+                keyboard.keyRelease(KEY_A);
             }
         
             // Test gamepad by pressing and releasing the A button every second
             gamepadPressed = !gamepadPressed;
             if(gamepadPressed){
-                gamepad->press(BUTTON_1);
+                gamepad.press(BUTTON_1);
             } else {
-                gamepad->release(BUTTON_1);
+                gamepad.release(BUTTON_1);
             }
         }
 

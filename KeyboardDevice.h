@@ -64,11 +64,12 @@ private:
 
 public:
     KeyboardDevice();
-    KeyboardDevice(const KeyboardConfiguration& config);
     ~KeyboardDevice();
+
+    void setConfig(const KeyboardConfiguration& config);
     
     void init(NimBLEHIDDevice* hid) override;
-    const BaseCompositeDeviceConfiguration* getDeviceConfig() const override;
+    const BaseCompositeDeviceConfiguration& getDeviceConfig() const override;
 
     void resetKeys();
 
