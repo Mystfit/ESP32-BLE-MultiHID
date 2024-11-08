@@ -60,7 +60,7 @@ void loop() {
 
         // Test keyboard
         if(reportCount % 100 == 0){
-            keyboard.getDeviceConfig(KEY_A);
+            keyboard.keyPress(KEY_A);
             keyboard.keyRelease(KEY_A);
         }
 

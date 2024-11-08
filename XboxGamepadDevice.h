@@ -11,46 +11,41 @@
 #include "XboxDescriptors.h"
 #include "XboxGamepadConfiguration.h"
 
-// Button bitmasks
-#define XBOX_BUTTON_A 0x01
-#define XBOX_BUTTON_B 0x02
-// UNUSED - 0x04
-#define XBOX_BUTTON_X 0x08 
-#define XBOX_BUTTON_Y 0x10
-// UNUSED - 0x20
-#define XBOX_BUTTON_LB 0x40
-#define XBOX_BUTTON_RB 0x80
-// UNUSED - 0x100
-// UNUSED - 0x200
-// UNUSED - 0x400
-#define XBOX_BUTTON_SELECT 0x400
-#define XBOX_BUTTON_START 0x800
-#define XBOX_BUTTON_HOME 0x1000
-#define XBOX_BUTTON_LS 0x2000
-#define XBOX_BUTTON_RS 0x4000
+enum class XboxButtons : uint16_t {
+    A = 0x01,
+    B = 0x02,
+    // UNUSED = 0x04,
+    X = 0x08,
+    Y = 0x10,
+    // UNUSED = 0x20,
+    LB = 0x40,
+    RB = 0x80,
+    // UNUSED = 0x100,
+    // UNUSED = 0x200,
+    SELECT = 0x400,
+    START = 0x800,
+    HOME = 0x1000,
+    LS = 0x2000,
+    RS = 0x4000,
+    SHARE = 0x8000 // Share button lives in its own byte at the end of the input report but it's available here for convience
+};
+
 
 // Select bitmask
 // The share button lives in its own byte at the end of the input report
 #define XBOX_BUTTON_SHARE 0x01
-
-// Dpad values
-#define XBOX_BUTTON_DPAD_NONE 0x00
-#define XBOX_BUTTON_DPAD_NORTH 0x01
-#define XBOX_BUTTON_DPAD_NORTHEAST 0x02
-#define XBOX_BUTTON_DPAD_EAST 0x03
-#define XBOX_BUTTON_DPAD_SOUTHEAST 0x04
-#define XBOX_BUTTON_DPAD_SOUTH 0x05
-#define XBOX_BUTTON_DPAD_SOUTHWEST 0x06
-#define XBOX_BUTTON_DPAD_WEST 0x07
-#define XBOX_BUTTON_DPAD_NORTHWEST 0x08
 
 // Dpad bitflags
 enum XboxDpadFlags : uint8_t {
     NONE = 0x00,
     NORTH = 0x01,
     EAST = 0x02,
+    NORTHEAST = 0x03, // NORTH | EAST
     SOUTH = 0x04,
-    WEST = 0x08
+    SOUTHEAST = 0x06, // SOUTH | EAST
+    WEST = 0x08,
+    NORTHWEST = 0x09, // NORTH | WEST
+    SOUTHWEST = 0x0C, // SOUTH | WEST
 };
 
 // Trigger range
@@ -117,43 +112,22 @@ struct XboxGamepadInputReportData {
 #pragma pack(pop)
 
 
-static uint8_t dPadDirectionToValue(XboxDpadFlags direction){
-    if(direction == XboxDpadFlags::NORTH)
-        return XBOX_BUTTON_DPAD_NORTH;
-    else if(direction == (XboxDpadFlags::EAST | XboxDpadFlags::NORTH))
-        return XBOX_BUTTON_DPAD_NORTHEAST;
-    else if(direction == XboxDpadFlags::EAST)
-        return XBOX_BUTTON_DPAD_EAST;
-    else if(direction == (XboxDpadFlags::EAST | XboxDpadFlags::SOUTH))
-        return XBOX_BUTTON_DPAD_SOUTHEAST;
-    else if(direction == XboxDpadFlags::SOUTH)
-        return XBOX_BUTTON_DPAD_SOUTH;
-    else if(direction == (XboxDpadFlags::WEST | XboxDpadFlags::SOUTH))
-        return XBOX_BUTTON_DPAD_SOUTHWEST;
-    else if(direction == XboxDpadFlags::WEST)
-        return XBOX_BUTTON_DPAD_WEST;
-    else if(direction == (XboxDpadFlags::WEST | XboxDpadFlags::NORTH))
-        return XBOX_BUTTON_DPAD_NORTHWEST;
-    
-    return XBOX_BUTTON_DPAD_NONE;
-}
-
 static String dPadDirectionName(uint8_t direction){
-    if(direction == XBOX_BUTTON_DPAD_NORTH)
+    if(direction == XboxDpadFlags::NORTH)
         return "NORTH";
-    else if(direction == XBOX_BUTTON_DPAD_NORTHEAST)
+    else if(direction == XboxDpadFlags::NORTHEAST)
         return "NORTHEAST";
-    else if(direction == XBOX_BUTTON_DPAD_EAST)
+    else if(direction == XboxDpadFlags::EAST)
         return "EAST";
-    else if(direction == XBOX_BUTTON_DPAD_SOUTHEAST)
+    else if(direction == XboxDpadFlags::SOUTHEAST)
         return "SOUTHEAST";
-    else if(direction == XBOX_BUTTON_DPAD_SOUTH)
+    else if(direction == XboxDpadFlags::SOUTH)
         return "SOUTH";
-    else if(direction == XBOX_BUTTON_DPAD_SOUTHWEST)
+    else if(direction == XboxDpadFlags::SOUTHWEST)
         return "SOUTHWEST";
-    else if(direction == XBOX_BUTTON_DPAD_WEST)
+    else if(direction == XboxDpadFlags::WEST)
         return "WEST";
-    else if(direction == XBOX_BUTTON_DPAD_NORTHWEST)
+    else if(direction == XboxDpadFlags::NORTHWEST)
         return "NORTHWEST";
     return "NONE";
 }
@@ -173,27 +147,29 @@ public:
 
     // Input Controls
     void resetInputs();
-    void press(uint16_t button = XBOX_BUTTON_A);    
-    void release(uint16_t button = XBOX_BUTTON_A); 
-    bool isPressed(uint16_t button = XBOX_BUTTON_A);
-    void setLeftThumb(int16_t x = 0, int16_t y = 0);
-    void setRightThumb(int16_t z = 0, int16_t rZ = 0);
+    void pressButton(XboxButtons button);    
+    void releaseButton(XboxButtons button); 
+    bool isButtonPressed(XboxButtons button);
+    void setLeftThumbstick(int16_t x = 0, int16_t y = 0);
+    void setRightThumbstick(int16_t z = 0, int16_t rZ = 0);
+    int16_t getThumbstickMin() const { return XBOX_STICK_MIN; }
+    int16_t getThumbstickMax() const { return XBOX_STICK_MAX; }
     void setLeftTrigger(uint16_t rX = 0);
     void setRightTrigger(uint16_t rY = 0);
-    void setTriggers(uint16_t rX = 0, uint16_t rY = 0);
-    void pressDPadDirection(uint8_t direction = 0);
-    void pressDPadDirectionFlag(XboxDpadFlags direction = XboxDpadFlags::NONE);
+    uint16_t getTriggerMin() const { return XBOX_TRIGGER_MIN; }
+    uint16_t getTriggerMax() const { return XBOX_TRIGGER_MAX; }
+    void pressDPad(XboxDpadFlags direction);
     void releaseDPad();
-    bool isDPadPressed(uint8_t direction = 0);
-    bool isDPadPressedFlag(XboxDpadFlags direction);
-    void pressShare();
-    void releaseShare();
+    XboxDpadFlags getDPadPressedDirection() const;
     
     void sendGamepadReport(bool defer = false);
 
 private:
     void sendGamepadReportImpl();
 
+    void pressShare();
+    void releaseShare();
+    bool isSharePressed();
     XboxGamepadInputReportData _inputReport;
 
     NimBLECharacteristic* _extra_input;

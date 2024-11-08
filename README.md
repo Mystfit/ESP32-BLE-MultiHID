@@ -70,9 +70,9 @@ void setup() {
     Serial.begin(115200);
 
      // Add all devices to the composite HID device to manage them
-    compositeHID.addDevice(&keyboard);
-    compositeHID.addDevice(&mouse);
-    compositeHID.addDevice(&gamepad);
+    compositeHID.addDevice(keyboard);
+    compositeHID.addDevice(mouse);
+    compositeHID.addDevice(gamepad);
 
     // Start the composite HID device to broadcast HID reports
     compositeHID.begin();
@@ -93,26 +93,34 @@ void loop() {
 
     while(millis() - startTime < 8000){
         reportCount++;
+
+        // Test mouse movement
         int8_t x = round(cos((float)millis() / 1000.0f) * 10.0f);
         int8_t y = round(sin((float)millis() / 1000.0f) * 10.0f);
-        mouse->mouseMove(x, y);
+        mouse.mouseMove(x, y);
+
+        // Test mouse presses
+        if(reportCount % 50 == 0){
+            mouse.mousePress(MOUSE_LOGICAL_LEFT_BUTTON);
+            mouse.mouseRelease(MOUSE_LOGICAL_LEFT_BUTTON);
+        }
 
         // Test keyboard presses
         if(reportCount % 100 == 0){
-            keyboard->keyPress(KEY_A);
-            keyboard->keyRelease(KEY_A);
+            keyboard.keyPress(KEY_A);
+            keyboard.keyRelease(KEY_A);
         }
 
         // Test gamepad button presses
         if(reportCount % 100 == 0){
             gamepadPressed = !gamepadPressed;
             if(gamepadPressed)
-                gamepad->press(BUTTON_1);
+                gamepad.press(BUTTON_1);
             else
-                gamepad->release(BUTTON_1);
+                gamepad.release(BUTTON_1);
         }
         
-        delay(16);
+        delay(8);
     }
   }
 }

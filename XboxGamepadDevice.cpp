@@ -95,13 +95,19 @@ void XboxGamepadDevice::resetInputs() {
     memset(&_inputReport, 0, sizeof(XboxGamepadInputReportData));
 }
 
-void XboxGamepadDevice::press(uint16_t button) {
+void XboxGamepadDevice::pressButton(XboxButtons button) {
+    // Handle share button seperately
+    if(button == XboxButtons::SHARE){
+        pressShare();
+        return;
+    }
+
     // Avoid double presses
-    if (!isPressed(button))
+    if (!isButtonPressed(button))
     {
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            _inputReport.buttons |= button;
+            _inputReport.buttons |= static_cast<uint16_t>(button);
             ESP_LOGD(LOG_TAG, "XboxGamepadDevice::press, button: %d", button);
         }
 
@@ -112,13 +118,18 @@ void XboxGamepadDevice::press(uint16_t button) {
     }
 }
 
-void XboxGamepadDevice::release(uint16_t button) {
+void XboxGamepadDevice::releaseButton(XboxButtons button) {
+    if(button == XboxButtons::SHARE){
+        releaseShare();
+        return;
+    }
+    
     // Avoid double presses
-    if (isPressed(button))
+    if (isButtonPressed(button))
     {   
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            _inputReport.buttons ^= button;
+            _inputReport.buttons ^= static_cast<uint16_t>(button);
             ESP_LOGD(LOG_TAG, "XboxGamepadDevice::release, button: %d", button);
         }
 
@@ -129,12 +140,17 @@ void XboxGamepadDevice::release(uint16_t button) {
     }
 }
 
-bool XboxGamepadDevice::isPressed(uint16_t button) {
+bool XboxGamepadDevice::isButtonPressed(XboxButtons button) {
+    if(button == XboxButtons::SHARE){
+        return isSharePressed();
+    }
+    
     std::lock_guard<std::mutex> lock(_mutex);
-    return (bool)((_inputReport.buttons & button) == button);
+    uint16_t buttonValue = static_cast<uint16_t>(button);
+    return (bool)((_inputReport.buttons & buttonValue) == buttonValue);
 }
 
-void XboxGamepadDevice::setLeftThumb(int16_t x, int16_t y) {
+void XboxGamepadDevice::setLeftThumbstick(int16_t x, int16_t y) {
     x = constrain(x, XBOX_STICK_MIN, XBOX_STICK_MAX);
     y = constrain(y, XBOX_STICK_MIN, XBOX_STICK_MAX);
 
@@ -152,7 +168,7 @@ void XboxGamepadDevice::setLeftThumb(int16_t x, int16_t y) {
     }
 }
 
-void XboxGamepadDevice::setRightThumb(int16_t z, int16_t rZ) {
+void XboxGamepadDevice::setRightThumbstick(int16_t z, int16_t rZ) {
     z = constrain(z, XBOX_STICK_MIN, XBOX_STICK_MAX);
     rZ = constrain(rZ, XBOX_STICK_MIN, XBOX_STICK_MAX);
 
@@ -200,26 +216,19 @@ void XboxGamepadDevice::setRightTrigger(uint16_t value) {
     }
 }
 
-void XboxGamepadDevice::setTriggers(uint16_t left, uint16_t right) {
-    left = constrain(left, XBOX_TRIGGER_MIN, XBOX_TRIGGER_MAX);
-    right = constrain(right, XBOX_TRIGGER_MIN, XBOX_TRIGGER_MAX);
-
-    if (_inputReport.brake != left || _inputReport.accelerator != right) {
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
-            _inputReport.brake = left;
-            _inputReport.accelerator = right;
-        }
-        if (_config->getAutoReport()) {
-            sendGamepadReport();
-        }
+void XboxGamepadDevice::pressDPad(XboxDpadFlags direction) {
+    // Filter opposite button presses
+    if((direction & (XboxDpadFlags::NORTH | XboxDpadFlags::SOUTH)) == (XboxDpadFlags::NORTH | XboxDpadFlags::SOUTH)){
+        ESP_LOGD(LOG_TAG, "Filtering opposite button presses - up down");
+        direction = (XboxDpadFlags)(direction ^ (uint8_t)(XboxDpadFlags::NORTH | XboxDpadFlags::SOUTH));
     }
-}
-
-void XboxGamepadDevice::pressDPadDirection(uint8_t direction) {
+    if((direction & (XboxDpadFlags::EAST | XboxDpadFlags::WEST)) == (XboxDpadFlags::EAST | XboxDpadFlags::WEST)){
+        ESP_LOGD(LOG_TAG, "Filtering opposite button presses - left right");
+        direction = (XboxDpadFlags)(direction ^ (uint8_t)(XboxDpadFlags::EAST | XboxDpadFlags::WEST));
+    }
 
     // Avoid double presses
-    if (!isDPadPressed(direction))
+    if (!getDPadPressedDirection() == direction)
     {
         ESP_LOGD(LOG_TAG, "Pressing dpad direction %s", dPadDirectionName(direction).c_str());
         {
@@ -234,55 +243,13 @@ void XboxGamepadDevice::pressDPadDirection(uint8_t direction) {
     }
 }
 
-void XboxGamepadDevice::pressDPadDirectionFlag(XboxDpadFlags direction) {
-    // Filter opposite button presses
-    if((direction & (XboxDpadFlags::NORTH | XboxDpadFlags::SOUTH)) == (XboxDpadFlags::NORTH | XboxDpadFlags::SOUTH)){
-        ESP_LOGD(LOG_TAG, "Filtering opposite button presses - up down");
-        direction = (XboxDpadFlags)(direction ^ (uint8_t)(XboxDpadFlags::NORTH | XboxDpadFlags::SOUTH));
-    }
-    if((direction & (XboxDpadFlags::EAST | XboxDpadFlags::WEST)) == (XboxDpadFlags::EAST | XboxDpadFlags::WEST)){
-        ESP_LOGD(LOG_TAG, "Filtering opposite button presses - left right");
-        direction = (XboxDpadFlags)(direction ^ (uint8_t)(XboxDpadFlags::EAST | XboxDpadFlags::WEST));
-    }
-
-    pressDPadDirection(dPadDirectionToValue(direction));
-}
-
 void XboxGamepadDevice::releaseDPad() {
-    pressDPadDirection(XBOX_BUTTON_DPAD_NONE);
+    pressDPad(XboxDpadFlags::NONE);
 }
 
-bool XboxGamepadDevice::isDPadPressed(uint8_t direction) {
-    std::lock_guard<std::mutex> lock(_mutex);
-    // Serial.print("Internal hat value:");
-    // Serial.println(_inputReport.hat, HEX);
-    return _inputReport.hat == direction;
-    //return (bool)((_inputReport.hat & direction) == direction);
+XboxDpadFlags XboxGamepadDevice::getDPadPressedDirection() const {
+    return static_cast<XboxDpadFlags>(_inputReport.hat);
 }
-
-bool XboxGamepadDevice::isDPadPressedFlag(XboxDpadFlags direction) {
-    std::lock_guard<std::mutex> lock(_mutex);
-
-    if(direction == XboxDpadFlags::NORTH){
-        return _inputReport.hat == XBOX_BUTTON_DPAD_NORTH;
-    } else if(direction == (XboxDpadFlags::NORTH & XboxDpadFlags::EAST)){
-        return _inputReport.hat == XBOX_BUTTON_DPAD_NORTHEAST;
-    } else if(direction == XboxDpadFlags::EAST){
-        return _inputReport.hat == XBOX_BUTTON_DPAD_EAST;
-    } else if(direction == (XboxDpadFlags::SOUTH & XboxDpadFlags::EAST)){
-        return _inputReport.hat == XBOX_BUTTON_DPAD_SOUTHEAST;
-    } else if(direction == XboxDpadFlags::SOUTH){
-        return _inputReport.hat == XBOX_BUTTON_DPAD_SOUTH;
-    } else if(direction == (XboxDpadFlags::SOUTH & XboxDpadFlags::WEST)){
-        return _inputReport.hat == XBOX_BUTTON_DPAD_SOUTHWEST;
-    } else if(direction == XboxDpadFlags::WEST){
-        return _inputReport.hat == XBOX_BUTTON_DPAD_WEST;
-    } else if(direction == (XboxDpadFlags::NORTH & XboxDpadFlags::WEST)){
-        return _inputReport.hat == XBOX_BUTTON_DPAD_NORTHWEST;
-    }
-    return false;
-}
-
 
 void XboxGamepadDevice::pressShare() {
     // Avoid double presses
@@ -313,6 +280,10 @@ void XboxGamepadDevice::releaseShare() {
             sendGamepadReport();
         }
     }
+}
+
+bool XboxGamepadDevice::isSharePressed() {
+    return (bool)(_inputReport.share & XBOX_BUTTON_SHARE);
 }
 
 void XboxGamepadDevice::sendGamepadReport(bool defer) {
