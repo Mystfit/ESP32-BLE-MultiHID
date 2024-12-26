@@ -8,9 +8,13 @@ This library will let your ESP32 microcontroller behave as a bluetooth mouse, ke
 Published under the MIT license. Please see license.txt.
 
 ## Dependencies
- - Nimble-Arduino. Use the latest Github version from commit [a79941c](https://github.com/h2zero/NimBLE-Arduino/commit/a79941cc9e77ed60136ee385b1c73d89c847bd94) onwards. Do not use 1.4.2 from the Arduino library manager.
- -  Callback. Available from the Arduino library manager or [here](https://github.com/tomstewart89/Callback).
+ - Nimble-Arduino. Actual version support Nimble-Arduino-2.1.2
+ - Callback. Available from the Arduino library manager or [here](https://github.com/tomstewart89/Callback).
 
+## Optional dependencies
+ - Keypad 
+ - Bounce2
+   
 ## XInput gamepad features
 
  - [x] All buttons and joystick axes available
