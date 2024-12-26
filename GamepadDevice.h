@@ -117,6 +117,10 @@ public:
     void resetButtons();
 
     void sendGamepadReport(bool defer = false);
+
+    // callbacks
+    Signal<uint8_t> onPlayerIndicatorChanged;
+
 private:
     void sendGamepadReportImp();
 
@@ -124,8 +128,7 @@ private:
     // Output properties
     uint8_t getPlayerIndicator();
 
-    // callbacks
-    Signal<uint8_t> onPlayerIndicatorChanged;
+
 
 
 private:
