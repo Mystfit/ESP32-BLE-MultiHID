@@ -18,7 +18,7 @@ jobs:
         with:
           fqbn: esp32:esp32:esp32
           sketch-paths: |
-            - examples/GamepadExamples/CharacteristicsConfiguration/CharacteristicsConfiguration.ino
+            # - examples/GamepadExamples/CharacteristicsConfiguration/CharacteristicsConfiguration.ino # disable because  esp_base_mac_addr_set is disabled in BleCompositeHID.cpp
             - examples/GamepadExamples/DrivingControllerTest/DrivingControllerTest.ino
             - examples/GamepadExamples/FlightControllerTest/FlightControllerTest.ino
             - examples/GamepadExamples/Gamepad/Gamepad.ino
