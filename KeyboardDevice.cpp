@@ -65,9 +65,9 @@ KeyboardDevice::~KeyboardDevice()
 
 void KeyboardDevice::init(NimBLEHIDDevice* hid)
 {
-    _input = hid->inputReport(_config.getReportId());
-    _mediaInput = hid->inputReport(MEDIA_KEYS_REPORT_ID);
-    _output = hid->outputReport(_config.getReportId());
+    _input = hid->getInputReport(_config.getReportId());
+    _mediaInput = hid->getInputReport(MEDIA_KEYS_REPORT_ID);
+    _output = hid->getOutputReport(_config.getReportId());
     _callbacks = new KeyboardCallbacks(this);
     _output->setCallbacks(_callbacks);
 

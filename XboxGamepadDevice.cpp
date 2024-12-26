@@ -82,11 +82,11 @@ XboxGamepadDevice::~XboxGamepadDevice() {
 
 void XboxGamepadDevice::init(NimBLEHIDDevice* hid) {
     /// Create input characteristic to send events to the computer
-    auto input = hid->inputReport(XBOX_INPUT_REPORT_ID);
-    //_extra_input = hid->inputReport(XBOX_EXTRA_INPUT_REPORT_ID);
+    auto input = hid->getInputReport(XBOX_INPUT_REPORT_ID);
+    //_extra_input = hid->getInputReport(XBOX_EXTRA_INPUT_REPORT_ID);
 
     // Create output characteristic to handle events coming from the computer
-    auto output = hid->outputReport(XBOX_OUTPUT_REPORT_ID);
+    auto output = hid->getOutputReport(XBOX_OUTPUT_REPORT_ID);
     _callbacks = new XboxGamepadCallbacks(this);
     output->setCallbacks(_callbacks);
 

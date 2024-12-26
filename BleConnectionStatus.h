@@ -8,13 +8,15 @@
 
 #include <NimBLEServer.h>
 #include "NimBLECharacteristic.h"
+#include "NimBLEConnInfo.h"
 
 class BleConnectionStatus : public NimBLEServerCallbacks
 {
 public:
     BleConnectionStatus(void);
-    void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override;
-    void onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) override;
+    void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo) override;
+    void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo, int reason) override;
+    //NimBLECharacteristic *inputGamepad;
     bool isConnected();
 private:
     bool connected = false;

@@ -25,13 +25,13 @@ public:
     void begin(const BLEHostConfiguration& config);
     void end();
 
-    void setBatteryLevel(uint8_t level);
     void addDevice(BaseCompositeDevice* device);
     bool isConnected();
 
     void queueDeviceDeferredReport(std::function<void()> && reportFunc);
     void sendDeferredReports();
 
+    void setBatteryLevel(uint8_t level);
     uint8_t batteryLevel;
     std::string deviceManufacturer;
     std::string deviceName;

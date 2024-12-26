@@ -7,7 +7,6 @@
 #include <driver/adc.h>
 #include "sdkconfig.h"
 
-
 #include "BleCompositeHID.h"
 #include "BleConnectionStatus.h"
 
