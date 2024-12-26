@@ -45,4 +45,5 @@ jobs:
             - name: callback
             - name: NimBLE-Arduino
             - name: Keypad
+            - name: Bounce2
             - source-path: .
