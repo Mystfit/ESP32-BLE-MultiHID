@@ -13,7 +13,6 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
-#include <stdexcept>
 
 
 #if defined(CONFIG_ARDUHAL_ESP_LOG)
