@@ -44,4 +44,5 @@ jobs:
           libraries: |
             - name: callback
             - name: NimBLE-Arduino
+            - name: Keypad
             - source-path: .
