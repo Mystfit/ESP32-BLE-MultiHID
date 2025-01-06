@@ -23,12 +23,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # See: https://github.com/arduino/compile-sketches#readme
       - name: Compile sketches
         uses: arduino/compile-sketches@v1
         with:
+          enable-deltas-report: true
           fqbn: esp32:esp32:esp32
           sketch-paths: |
             # - examples/GamepadExamples/CharacteristicsConfiguration/CharacteristicsConfiguration.ino # disable because  esp_base_mac_addr_set is disabled in BleCompositeHID.cpp
@@ -61,3 +62,8 @@ jobs:
             - name: Keypad
             - name: Bounce2
             - source-path: .
+
+      - name: Sketches report size delta
+        uses: arduino/report-size-deltas@v1
+        # Only run the action when the workflow is triggered by a pull request.
+        if: github.event_name == 'pull_request'
