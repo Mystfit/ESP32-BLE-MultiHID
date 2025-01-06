@@ -1,8 +1,21 @@
+---
 name: Compile Sketches
 
-on:
-  - push
-  - pull_request
+'on':
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]*"
+    branches:
+      - "master"
+      - "ci-builds-*"
+  pull_request:
+  workflow_dispatch:
+  merge_group:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '15 0 1 * *'
+
+permissions: {}
 
 jobs:
   compile-sketches:
@@ -10,12 +23,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # See: https://github.com/arduino/compile-sketches#readme
       - name: Compile sketches
         uses: arduino/compile-sketches@v1
         with:
+          enable-deltas-report: true
           fqbn: esp32:esp32:esp32
           sketch-paths: |
             # - examples/GamepadExamples/CharacteristicsConfiguration/CharacteristicsConfiguration.ino # disable because  esp_base_mac_addr_set is disabled in BleCompositeHID.cpp
@@ -40,10 +54,16 @@ jobs:
             - examples/MultipleDeviceExamples/DeferredReports/DeferredReports.ino
             - examples/MultipleDeviceExamples/GamepadAndMouse/GamepadAndMouse.ino
             - examples/MultipleDeviceExamples/GamepadMouseKeyboard/GamepadMouseKeyboard.ino
-            - examples/MultipleDeviceExamples/MouseAndKeyboard/MouseAndKeyboard.ino            
+            - examples/MultipleDeviceExamples/MouseAndKeyboard/MouseAndKeyboard.ino
+            - examples/SetBatteryLevel/SetBatteryLevel.ino
           libraries: |
             - name: callback
             - name: NimBLE-Arduino
             - name: Keypad
             - name: Bounce2
             - source-path: .
+
+      - name: Sketches report size delta
+        uses: arduino/report-size-deltas@v1
+        # Only run the action when the workflow is triggered by a pull request.
+        if: github.event_name == 'pull_request'
